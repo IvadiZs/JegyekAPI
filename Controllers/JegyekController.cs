@@ -101,11 +101,9 @@ namespace JegyekAPI.Controllers {
                 cmd.Parameters.AddWithValue("Grade", newGrade.Grade);
                 cmd.Parameters.AddWithValue("Description", newGrade.Description);
                 cmd.Parameters.AddWithValue("Created", newGrade.Created);
-
                 cmd.ExecuteNonQuery();
 
                 connect.connection.Close();
-
                 return StatusCode(201, newGrade);
 
             }
@@ -118,6 +116,7 @@ namespace JegyekAPI.Controllers {
         [HttpPut("{id}")]
         public ActionResult<Jegyek> Put(UpdateGradeDto updateGrade, Guid id) {
             try {
+
                 connect.connection.Open();
 
                 string sql = $"UPDATE `grades` SET `Id`=@Id,`Grade`=@Grade,`Description`=@Description WHERE Id = @Id";
@@ -127,17 +126,38 @@ namespace JegyekAPI.Controllers {
                 cmd.Parameters.AddWithValue("Id", id);
                 cmd.Parameters.AddWithValue("Grade", updateGrade.Grade);
                 cmd.Parameters.AddWithValue("Description", updateGrade.Description);
-
                 cmd.ExecuteNonQuery();
 
                 connect.connection.Close();
-
                 return StatusCode(204);
             }
             catch (Exception e) {
 
                 return BadRequest(e.Message);
             }
+        }
+
+        [HttpDelete("{id}")]
+        public ActionResult Delete(Guid id) {
+            try {
+                connect.connection.Open();
+
+                string sql = $"DELETE FROM grades WHERE Id = @Id";
+
+                MySqlCommand cmd = new MySqlCommand(sql, connect.connection);
+
+                cmd.Parameters.AddWithValue("Id", id);
+                cmd.ExecuteNonQuery();
+
+                connect.connection.Close();
+                return StatusCode(200);
+            }
+            catch (Exception e) {
+
+                return BadRequest(e.Message);
+            }
+
+
         }
     }
 }
