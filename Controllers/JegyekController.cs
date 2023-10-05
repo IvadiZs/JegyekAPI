@@ -78,5 +78,41 @@ namespace JegyekAPI.Controllers {
                 return BadRequest(404);
             }
         }
+
+        [HttpPost]
+        public ActionResult<Jegyek> Post(CreateGradeDto createGrade) {
+          
+            var newGrade = new Jegyek {
+                Id = Guid.NewGuid(),
+                Grade = createGrade.Grade,
+                Description = createGrade.Description,
+                Created = DateTimeOffset.Now
+            };
+
+            try {
+
+                connect.connection.Open();
+
+                string sql = $"INSERT INTO `grades`(`Id`, `Grade`, `Description`, `Created`) VALUES (@Id,@Grade,@Description,@Created)";
+                
+                MySqlCommand cmd = new MySqlCommand(sql, connect.connection);
+
+                cmd.Parameters.AddWithValue("Id", newGrade.Id);
+                cmd.Parameters.AddWithValue("Grade", newGrade.Grade);
+                cmd.Parameters.AddWithValue("Description", newGrade.Description);
+                cmd.Parameters.AddWithValue("Created", newGrade.Created);
+
+                cmd.ExecuteNonQuery();
+
+                connect.connection.Close();
+
+                return StatusCode(201, newGrade);
+
+            }
+            catch (Exception) {
+
+                return BadRequest(404);
+            }
+        }
     }
 }
