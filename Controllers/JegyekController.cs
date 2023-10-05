@@ -93,7 +93,7 @@ namespace JegyekAPI.Controllers {
 
                 connect.connection.Open();
 
-                string sql = $"INSERT INTO `grades`(`Id`, `Grade`, `Description`, `Created`) VALUES (@Id,@Grade,@Description,@Created)";
+                string sql = $"INSERT INTO `grades`(`Id`, ` Grade`, `Description`, `Created`) VALUES (@Id,@Grade,@Description,@Created)";
                 
                 MySqlCommand cmd = new MySqlCommand(sql, connect.connection);
 
@@ -112,6 +112,31 @@ namespace JegyekAPI.Controllers {
             catch (Exception) {
 
                 return BadRequest(404);
+            }
+        }
+
+        [HttpPut("{id}")]
+        public ActionResult<Jegyek> Put(UpdateGradeDto updateGrade, Guid id) {
+            try {
+                connect.connection.Open();
+
+                string sql = $"UPDATE `grades` SET `Id`=@Id,`Grade`=@Grade,`Description`=@Description WHERE Id = @Id";
+
+                MySqlCommand cmd = new MySqlCommand(sql, connect.connection);
+
+                cmd.Parameters.AddWithValue("Id", id);
+                cmd.Parameters.AddWithValue("Grade", updateGrade.Grade);
+                cmd.Parameters.AddWithValue("Description", updateGrade.Description);
+
+                cmd.ExecuteNonQuery();
+
+                connect.connection.Close();
+
+                return StatusCode(204);
+            }
+            catch (Exception e) {
+
+                return BadRequest(e.Message);
             }
         }
     }
